@@ -1,4 +1,10 @@
+import java.security.PublicKey;
+import java.util.ArrayList;
+
 public class TxHandler {
+
+
+    private UTXOPool utxopool;
 
     /**
      * Creates a public ledger whose current UTXOPool (collection of unspent transaction outputs) is
@@ -7,6 +13,8 @@ public class TxHandler {
      */
     public TxHandler(UTXOPool utxoPool) {
         // IMPLEMENT THIS
+        utxopool = new UTXOPool(utxoPool);
+
     }
 
     /**
@@ -20,6 +28,20 @@ public class TxHandler {
      */
     public boolean isValidTx(Transaction tx) {
         // IMPLEMENT THIS
+        ArrayList<Transaction.Output> outputs = tx.getOutputs();
+        ArrayList<Transaction.Input> inputs = tx.getInputs();
+        for (Transaction.Output output : outputs) {
+            if (!(utxopool.containsOutput(output))) {
+                return false;
+            }
+        }
+        for (Transaction.Input input : inputs) {
+            PublicKey pk = (tx.getOutput(input.outputIndex)).address;
+            if (!(Crypto.verifySignature(pk, tx.getRawDataToSign(input.outputIndex), input.signature))) {
+                return false;
+            }
+        }
+
     }
 
     /**

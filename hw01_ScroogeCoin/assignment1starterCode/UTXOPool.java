@@ -51,4 +51,12 @@ public class UTXOPool {
         }
         return allUTXO;
     }
+
+    /** self write:
+     *  @return true if the UTXOPool contains the Output
+     * */
+    public boolean containsOutput (Transaction.Output op) {
+        return H.containsValue(op);
+    }
+
 }
