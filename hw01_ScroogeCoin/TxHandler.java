@@ -1,5 +1,8 @@
+import java.lang.reflect.Array;
 import java.security.PublicKey;
+import java.security.interfaces.*;
 import java.util.ArrayList;
+
 
 public class TxHandler {
 
@@ -21,7 +24,7 @@ public class TxHandler {
 	/* Returns true if 
 	 * (1) all outputs claimed by tx are in the current UTXO pool, 
 	 * (2) the signatures on each input of tx are valid,
-	 * // don't understand the third request??
+	 * // (3) ensure the double spend
 	 * (3) no UTXO is claimed multiple times by tx, 
 	 * (4) all of tx’s output values are non-negative, and
 	 * (5) the sum of tx’s input values is greater than or equal to the sum of   
@@ -34,29 +37,53 @@ public class TxHandler {
 	    byte[] txHash = tx.getHash();
 	    int numOutput = tx.numOutputs();
 	    // check (1)
-	    for (int i = 0; i < numOutput; i += 1) {
-	        UTXO utxo = new UTXO(txHash, i);
-	        if (!(utxoPool.contains(utxo))) {
-	            return false;
+		for (Transaction.Output output : tx.getOutputs()) {
+            if (!(utxoPool.containsOutput(output))) {
+                return false;
             }
         }
-        // check (2), (4), (5)
-        int sumOutput = 0;
-	    int sumInput = 0;
-        for (int index = 0; index < numOutput; index += 1) {
-	        Transaction.Input input = tx.getInput(index);
-	        sumInput += input.prevTxHash
-	        Transaction.Output output = tx.getOutput(index);
-	        byte[] inputTxHash = tx.getRawDataToSign(index);
-	        RSAKey pubkey = (RSAKey)output.address;
-            if (!(pubkey.verifySignature(inputTxHash, input.signature))) {
+        ArrayList<Transaction.Input> inputs = tx.getInputs();
+		ArrayList<Transaction.Output> outputs = tx.getOutputs();
+
+        // check (2)
+        for (Transaction.Input input : inputs) {
+		    for (Transaction.Output output : outputs) {
+		        if (!(output.address.verifySignature(tx.getRawDataToSign(input.outputIndex), input.signature))) {
+		            return false;
+                }
+            }
+        }
+        // check (3)
+        ArrayList<UTXO> utxos = new ArrayList<>();
+        for (Transaction.Input input : inputs) {
+            UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
+            if (utxos.contains(utxo)) {
                 return false;
-            } if (output.value < 0) {
+            } else {
+                utxos.add(utxo);
+            }
+        }
+
+        // check (4)
+        for (Transaction.Output output : outputs) {
+            if (output.value < 0) {
                 return false;
             }
-       }
+        }
 
+        // check (5)
 
+        int sumOutput = 0;
+	    int sumInput = 0;
+	    for (Transaction.Input input : inputs) {
+            UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
+            Transaction.Output prevoutput = utxoPool.getTxOutput(utxo);
+            sumInput += prevoutput.value;
+        }
+        for (Transaction.Output output : outputs) {
+	        sumOutput += output.value;
+        }
+        return (sumInput >= sumOutput);
 	}
 
 	/* Handles each epoch by receiving an unordered array of proposed 
@@ -66,7 +93,12 @@ public class TxHandler {
 	 */
 	public Transaction[] handleTxs(Transaction[] possibleTxs) {
 		// IMPLEMENT THIS
-		return null;
+        int len = possibleTxs.length;
+        for (int i = 0; i < len; i += 1) {
+            if (isValidTx(possibleTxs[i])) {
+
+            }
+        }
 	}
 
 } 

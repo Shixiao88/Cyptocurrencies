@@ -8,8 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="rsa" level="project" />
-    <orderEntry type="library" exported="" name="javalib" level="project" />
+    <orderEntry type="library" name="rsa" level="project" />
     <orderEntry type="library" name="grading" level="project" />
   </component>
 </module>
