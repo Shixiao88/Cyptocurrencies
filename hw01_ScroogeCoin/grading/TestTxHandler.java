@@ -50,7 +50,17 @@ class TestIsValidTx {
       for (int i = 0; i < 32; i++) {
          key[i] = (byte) 1;
       }
-      
+
+
+      /*
+      * preparation stage:
+      * random create a list of RSAkeyPair call people
+      * map the RSAkeyPair with index call keyPairAtIndex
+      * create a new UTXOPool
+      * reate a transaction, randomly create a number of output in this tx, randomly choose a RSAKeyPair, publicKey will
+      *     be output's address, output's value is randomly created, put into tx, looping until reach the outputs' limit.
+      *     put all outputs into UTXOPool
+      * */
       prGen = new PRGen(key);
       
       people = new ArrayList<RSAKeyPair>();
@@ -87,6 +97,15 @@ class TestIsValidTx {
 
       txHandler = new TxHandler(new UTXOPool(utxoPool));
    }
+
+   /*
+   * create a new tx, randomly select a number of input and output.
+   * randomly select a utxo that haven't been chosen from UTXOPool, create Input with this utxo's information
+   * randomly create output, with random chosen value (total cannot to more than total input's value), randomly
+   *    choose RSAKeyPair and take public key as address.
+   * from the utxo that form input, select the corresponding RSAKeyPair(from utxoToKeyPair map), use it private key;
+   *    the ith input and total output, and input's index to add signature
+   * */
 
    public int test1() {
       System.out.println("Test 1: test isValidTx() with valid transactions");

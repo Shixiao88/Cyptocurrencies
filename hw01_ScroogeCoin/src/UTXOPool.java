@@ -56,7 +56,4 @@ public class UTXOPool {
       return allUTXO;
    }
 
-   public boolean containsOutput (Transaction.Output output) {
-       return H.containsValue(output);
-   }
 }

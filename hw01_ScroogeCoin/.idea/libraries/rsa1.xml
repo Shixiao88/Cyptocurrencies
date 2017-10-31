@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="rsa">
+  <library name="rsa1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/rsa.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/hw01_ScroogeCoin/rsa.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
