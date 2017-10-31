@@ -72,8 +72,8 @@ public class TxHandler {
 
         // check (5)
 
-        int sumOutput = 0;
-	    int sumInput = 0;
+        double sumOutput = 0;
+	    double sumInput = 0;
 	    for (Transaction.Input input : inputs) {
             UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
             Transaction.Output prevoutput = utxoPool.getTxOutput(utxo);
